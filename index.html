@@ -390,7 +390,7 @@
                                     <img id="card-img-front" src="boardgame1.jpeg" alt="Front" onerror="this.src='https://placehold.co/600x800/581c87/white?text=Lumera+Game'">
                                 </div>
                                 <div class="card__face card__face--back">
-                                    <img id="card-img-back" src="boardgame2.jpeg" alt="Back" onerror="this.src='https://placehold.co/600x800/581c87/white?text=Back+Side'">
+                                    <img src="logo lumera.jpeg" alt="Lumera Logo" class="p-12 bg-white object-contain w-full h-full">
                                 </div>
                             </div>
                         </div>
@@ -998,7 +998,6 @@
             const card = document.getElementById('card');
             const container = document.getElementById('product-viewer-container');
             const imgFront = document.getElementById('card-img-front');
-            const imgBack = document.getElementById('card-img-back');
             
             const images = ['boardgame1.jpeg', 'boardgame2.jpeg', 'boardgame3.jpeg', 'boardgame4.jpeg', 'boardgame.jpeg'];
             let currentIndex = 0;
@@ -1073,28 +1072,49 @@
                 }
             });
 
-            // Navigation Logic
+            // Navigation Logic with Animation
             const updateImages = () => {
                 const imgPath = images[currentIndex];
                 currentImage = imgPath;
-                
-                // Update Front
                 imgFront.src = imgPath;
-                
-                // Update Back (Next Image)
-                const nextIndex = (currentIndex + 1) % images.length;
-                imgBack.src = images[nextIndex];
             };
 
-            document.getElementById('nextBtn').addEventListener('click', () => {
-                currentIndex = (currentIndex + 1) % images.length;
-                updateImages();
-            });
+            const animateFlip = (direction) => {
+                card.classList.remove('auto-rotate');
+                
+                // 1. Slow down for animation
+                card.style.transition = 'transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1)';
+                
+                // 2. Rotate 180 degrees to show back (Logo)
+                targetRotY += 180;
+                targetRotX = 0; // Reset tilt
+                card.style.transform = `translateZ(-50px) rotateX(${targetRotX}deg) rotateY(${targetRotY}deg)`;
 
-            document.getElementById('prevBtn').addEventListener('click', () => {
-                currentIndex = (currentIndex - 1 + images.length) % images.length;
-                updateImages();
-            });
+                // 3. Wait for back to be visible
+                setTimeout(() => {
+                    // Change Image while hidden
+                    if (direction === 'next') {
+                        currentIndex = (currentIndex + 1) % images.length;
+                    } else {
+                        currentIndex = (currentIndex - 1 + images.length) % images.length;
+                    }
+                    updateImages();
+
+                    // 4. Rotate another 180 degrees to show front again
+                    targetRotY += 180;
+                    card.style.transform = `translateZ(-50px) rotateX(${targetRotX}deg) rotateY(${targetRotY}deg)`;
+
+                    // 5. Reset transition speed
+                    setTimeout(() => {
+                        card.style.transition = 'transform 0.1s';
+                        currentRotY = targetRotY;
+                        currentRotX = targetRotX;
+                    }, 600);
+                }, 600);
+            };
+
+            document.getElementById('nextBtn').addEventListener('click', () => animateFlip('next'));
+            document.getElementById('prevBtn').addEventListener('click', () => animateFlip('prev'));
         };
     </script>
 </body>
