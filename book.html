@@ -79,16 +79,27 @@
             position: absolute;
             bottom: 0.5rem;
             width: 100%;
-            text-align: center;
             font-size: 0.7rem;
             color: #94a3b8;
-            left: 0;
+            padding: 0 1.5rem;
+        }
+
+        /* Page Number Positioning for Spread View */
+        /* Even children (2, 4, 6...) are usually on the LEFT side */
+        .page:nth-child(even) .page-number {
+            text-align: left;
+        }
+        
+        /* Odd children (3, 5, 7...) are usually on the RIGHT side */
+        .page:nth-child(odd) .page-number {
+            text-align: right;
         }
 
         @media (min-width: 768px) {
             .page-number {
                 bottom: 1rem;
                 font-size: 0.8rem;
+                padding: 0 2rem;
             }
         }
 
@@ -195,6 +206,14 @@
             background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
             pointer-events: none;
             opacity: 0.5;
+        }
+        /* Blur Content for Fast Flip */
+        .blur-content .page-content {
+            opacity: 0.1;
+            filter: blur(2px);
+        }
+        .blur-content .page-number {
+            opacity: 0.3;
         }
     </style>
 </head>
@@ -607,7 +626,32 @@
         let globalPageFlip;
         function flipToPage(index) {
             if(globalPageFlip) {
+                const current = globalPageFlip.getCurrentPageIndex();
+                const pages = document.querySelectorAll('.page');
+                
+                // Determine range to blur (intermediate pages)
+                let start = Math.min(current, index);
+                let end = Math.max(current, index);
+                
+                // Apply blur to intermediate pages to simulate "skipping"
+                for (let i = start + 1; i < end; i++) {
+                    if (pages[i]) pages[i].classList.add('blur-content');
+                }
+
+                // Play sound
+                const flipSound = document.getElementById('flipSound');
+                if (flipSound) {
+                    flipSound.currentTime = 0;
+                    flipSound.play().catch(() => {});
+                }
+
+                // Flip
                 globalPageFlip.flip(index);
+
+                // Remove blur after animation (approx 1s)
+                setTimeout(() => {
+                    pages.forEach(p => p.classList.remove('blur-content'));
+                }, 1000);
             }
         }
 
