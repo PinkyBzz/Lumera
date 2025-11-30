@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buku Literasi - Lumera</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            overflow: hidden; /* Prevent body scroll, let the book handle it or fit screen */
+        }
+        .font-serif {
+            font-family: 'Merriweather', serif;
+        }
+        
+        /* Book Container */
+        .book-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            padding: 20px;
+            background: radial-gradient(circle at center, #f1f5f9 0%, #cbd5e1 100%);
+        }
+
+        /* Page Styles */
+        .page {
+            background-color: #fdfbf7; /* Paper color */
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.05);
+            padding: 2rem;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        
+        .page-content {
+            height: 100%;
+            overflow-y: auto; /* Allow scrolling inside page if text is too long */
+            padding-right: 10px;
+        }
+
+        /* Custom Scrollbar for page content */
+        .page-content::-webkit-scrollbar { width: 4px; }
+        .page-content::-webkit-scrollbar-track { background: transparent; }
+        .page-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+
+        .page-number {
+            position: absolute;
+            bottom: 1rem;
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            left: 0;
+        }
+
+        /* Cover Styles */
+        .cover {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border: 2px solid #334155;
+        }
+        
+        .cover-back {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Mobile Controls */
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 50;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(4px);
+            padding: 10px 20px;
+            border-radius: 999px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* Texture overlay for paper feel */
+        .paper-texture {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Back -->
+    <a href="index.html" class="fixed top-6 left-6 z-50 bg-white/80 backdrop-blur p-3 rounded-full shadow-lg hover:scale-110 transition-transform text-slate-700">
+        <i data-lucide="arrow-left" class="w-6 h-6"></i>
+    </a>
+
+    <!-- Audio Element -->
+    <audio id="flipSound" src="flip.mp3" preload="auto"></audio>
+
+    <div class="book-container">
+        <!-- The Book -->
+        <div id="book" class="shadow-2xl">
+            
+            <!-- Cover -->
+            <div class="page cover" data-density="hard">
+                <div class="border-4 border-orange-500/30 p-8 h-full w-full flex flex-col justify-center items-center rounded-lg">
+                    <div class="w-20 h-20 bg-orange-500 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-orange-500/20">
+                        <i data-lucide="book-open" class="w-10 h-10 text-white"></i>
+                    </div>
+                    <h1 class="text-3xl md:text-4xl font-bold mb-4 font-serif tracking-wide">Literasi &<br>Berpikir Kritis</h1>
+                    <p class="text-slate-400 text-sm uppercase tracking-widest mb-8">Membangun Masa Depan Indonesia</p>
+                    <div class="w-16 h-1 bg-orange-500 rounded-full"></div>
+                    <p class="mt-auto text-xs text-slate-500">Lumera Community Library</p>
+                </div>
+            </div>
+
+            <!-- Page 1: Gambaran Umum -->
+            <div class="page">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <h2 class="text-xl font-bold text-slate-800 mb-4 font-serif border-b-2 border-orange-200 pb-2">Gambaran Umum</h2>
+                    <div class="prose prose-slate prose-sm">
+                        <p class="mb-4">
+                            Ketiga dokumen yang dibahas membicarakan satu hal yang sangat penting bagi masa depan pendidikan di Indonesia: bagaimana <strong>minat baca (literasi)</strong>, <strong>kemampuan berpikir kritis</strong>, dan <strong>literasi digital</strong> saling berkaitan dan memengaruhi kualitas belajar siswa dan mahasiswa.
+                        </p>
+                        <p class="mb-4">
+                            Secara sederhana, ketiganya seperti tiga kaki kursi yang harus kuat agar generasi muda bisa duduk tegak dan siap menghadapi dunia yang penuh informasi dan tantangan.
+                        </p>
+                        <div class="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400 italic text-slate-700 my-4">
+                            "Minat baca yang rendah dan kemampuan berpikir kritis yang masih lemah menjadi penghambat besar bagi pendidikan di Indonesia."
+                        </div>
+                        <p>
+                            Untuk memperbaikinya, kita perlu membangun budaya literasi yang kuat sejak dini, sekaligus melatih anak-anak dan remaja agar bisa berpikir secara kritis, terutama di era digital.
+                        </p>
+                    </div>
+                </div>
+                <div class="page-number">1</div>
+            </div>
+
+            <!-- Page 2: Kenapa Minat Baca Rendah (1) -->
+            <div class="page">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <h2 class="text-xl font-bold text-slate-800 mb-4 font-serif border-b-2 border-orange-200 pb-2">1. Kenapa Minat Baca Rendah?</h2>
+                    <div class="prose prose-slate prose-sm">
+                        <p class="mb-4">
+                            Data dari UNESCO menyebutkan bahwa minat baca masyarakat Indonesia hanya sekitar <strong>0,001%</strong>, artinya dari 1.000 orang Indonesia, hanya 1 orang yang benar-benar rajin membaca. Indonesia juga berada di peringkat ke-60 dari 61 negara dalam hal literasi.
+                        </p>
+                        <h3 class="font-bold text-slate-900 mt-4 mb-2">Penyebab Utama:</h3>
+                        <ul class="list-disc pl-4 space-y-2">
+                            <li>
+                                <strong>Belum ada kebiasaan membaca sejak dini.</strong><br>
+                                Usia anak-anak adalah masa emas (golden age). Tapi banyak orang tua lebih sering membiarkan anak menonton TV atau main HP daripada membaca.
+                            </li>
+                            <li>
+                                <strong>Fasilitas membaca yang kurang memadai.</strong><br>
+                                Banyak sekolah belum punya perpustakaan yang nyaman, koleksi terbatas, dan ruang yang sumpek, membuat siswa malas membaca.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="page-number">2</div>
+            </div>
+
+            <!-- Page 3: Kenapa Minat Baca Rendah (2) -->
+            <div class="page">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <div class="prose prose-slate prose-sm mt-8">
+                        <ul class="list-disc pl-4 space-y-4">
+                            <li>
+                                <strong>Kurangnya teladan dari guru.</strong><br>
+                                Guru seharusnya menjadi panutan, tapi masih banyak guru yang tidak membaca buku di waktu luang.
+                            </li>
+                            <li>
+                                <strong>Persaingan dengan teknologi.</strong><br>
+                                TV, HP, dan media sosial sangat menarik perhatian, menghabiskan waktu yang seharusnya untuk membaca.
+                            </li>
+                            <li>
+                                <strong>Buku dianggap barang mewah.</strong><br>
+                                Harga buku relatif mahal bagi masyarakat menengah ke bawah, sehingga tidak menjadi prioritas dibanding kebutuhan pokok.
+                            </li>
+                        </ul>
+                        <div class="flex justify-center mt-8">
+                            <i data-lucide="book-x" class="w-16 h-16 text-slate-200"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-number">3</div>
+            </div>
+
+            <!-- Page 4: Dampak Minat Baca Rendah -->
+            <div class="page">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <h2 class="text-xl font-bold text-slate-800 mb-4 font-serif border-b-2 border-orange-200 pb-2">2. Dampak Minat Baca Rendah</h2>
+                    <div class="prose prose-slate prose-sm">
+                        <p class="mb-4">Minat baca rendah bukan cuma soal tidak suka baca, tapi berdampak luas:</p>
+                        <ul class="space-y-3">
+                            <li class="flex gap-3">
+                                <i data-lucide="alert-circle" class="w-5 h-5 text-red-400 flex-shrink-0"></i>
+                                <span><strong>Wawasan Sempit:</strong> Sulit menguasai ilmu dan teknologi untuk inovasi.</span>
+                            </li>
+                            <li class="flex gap-3">
+                                <i data-lucide="alert-circle" class="w-5 h-5 text-red-400 flex-shrink-0"></i>
+                                <span><strong>Mudah Terhasut:</strong> Gampang percaya doktrin negatif atau paham radikal karena kurang referensi.</span>
+                            </li>
+                            <li class="flex gap-3">
+                                <i data-lucide="alert-circle" class="w-5 h-5 text-red-400 flex-shrink-0"></i>
+                                <span><strong>Kreativitas Macet:</strong> Jarang membaca membuat pola pikir datar dan tidak inovatif.</span>
+                            </li>
+                            <li class="flex gap-3">
+                                <i data-lucide="alert-circle" class="w-5 h-5 text-red-400 flex-shrink-0"></i>
+                                <span><strong>Tertinggal Informasi:</strong> Sulit bersaing di dunia kerja karena kurang update.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="page-number">4</div>
+            </div>
+
+            <!-- Page 5: Dampak Lanjutan & Berpikir Kritis Intro -->
+            <div class="page">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <div class="prose prose-slate prose-sm">
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex gap-3">
+                                <i data-lucide="alert-circle" class="w-5 h-5 text-red-400 flex-shrink-0"></i>
+                                <span><strong>Kurang Peduli Sosial:</strong> Cenderung menutup diri dan tidak peka lingkungan.</span>
+                            </li>
+                            <li class="flex gap-3">
+                                <i data-lucide="alert-circle" class="w-5 h-5 text-red-400 flex-shrink-0"></i>
+                                <span><strong>Kesulitan Sosial:</strong> Susah diajak diskusi karena kurang "bahan" pembicaraan.</span>
+                            </li>
+                        </ul>
+
+                        <h2 class="text-xl font-bold text-slate-800 mb-4 font-serif border-b-2 border-orange-200 pb-2">3. Berpikir Kritis</h2>
+                        <p>
+                            <strong>Berpikir kritis</strong> adalah kemampuan menganalisis, mengevaluasi, dan menyimpulkan informasi secara logis. Tidak langsung percaya, tapi bertanya: <em>Dari mana sumbernya? Apakah logis? Ada buktinya?</em>
+                        </p>
+                    </div>
+                </div>
+                <div class="page-number">5</div>
+            </div>
+
+            <!-- Page 6: Pentingnya Berpikir Kritis -->
+            <div class="page">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <div class="prose prose-slate prose-sm mt-4">
+                        <p class="mb-4">Sayangnya, kemampuan ini di Indonesia masih rendah. Banyak siswa hanya menerima informasi guru tanpa bertanya dan mudah percaya hoax.</p>
+                        
+                        <h3 class="font-bold text-slate-900 mb-2">Kenapa Penting?</h3>
+                        <div class="grid grid-cols-1 gap-2">
+                            <div class="bg-white p-3 rounded border border-slate-100 shadow-sm">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-green-500 inline mr-2"></i> Memilih informasi valid.
+                            </div>
+                            <div class="bg-white p-3 rounded border border-slate-100 shadow-sm">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-green-500 inline mr-2"></i> Mengambil keputusan tepat.
+                            </div>
+                            <div class="bg-white p-3 rounded border border-slate-100 shadow-sm">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-green-500 inline mr-2"></i> Meningkatkan kualitas intelektual.
+                            </div>
+                            <div class="bg-white p-3 rounded border border-slate-100 shadow-sm">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-green-500 inline mr-2"></i> Modal bersaing global.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-number">6</div>
+            </div>
+
+            <!-- Page 7: Hubungan Membaca & Berpikir Kritis -->
+            <div class="page">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <h2 class="text-xl font-bold text-slate-800 mb-4 font-serif border-b-2 border-orange-200 pb-2">4. Hubungan Membaca & Berpikir Kritis</h2>
+                    <div class="prose prose-slate prose-sm">
+                        <p class="mb-4 font-semibold text-orange-600">Minat baca dan berpikir kritis saling terkait erat.</p>
+                        <p class="mb-4">
+                            Membaca haruslah menjadi <strong>"membaca kritis"</strong>.
+                        </p>
+                        <ul class="list-disc pl-4 space-y-2">
+                            <li>Membaca melatih otak memahami berbagai sudut pandang dan mengevaluasi kebenaran.</li>
+                            <li>Orang yang sering membaca terbiasa memilah informasi dan mencari sumber terpercaya.</li>
+                            <li>Membaca kritis mengembangkan kemampuan analisis, evaluasi, dan mencipta (Taksonomi Bloom).</li>
+                        </ul>
+                        <p class="mt-4 italic text-slate-500">
+                            "Semakin tinggi minat baca, semakin besar kemampuan berpikir kritisnya."
+                        </p>
+                    </div>
+                </div>
+                <div class="page-number">7</div>
+            </div>
+
+            <!-- Page 8: Literasi Digital -->
+            <div class="page">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <h2 class="text-xl font-bold text-slate-800 mb-4 font-serif border-b-2 border-orange-200 pb-2">5. Peran Literasi Digital</h2>
+                    <div class="prose prose-slate prose-sm">
+                        <p class="mb-4">
+                            Di era sekarang, literasi juga mencakup <strong>literasi digital</strong>: kemampuan menggunakan teknologi dan mengevaluasi informasi digital secara kritis.
+                        </p>
+                        <h3 class="font-bold text-slate-900 mb-2">Kenapa Penting?</h3>
+                        <ul class="list-disc pl-4 space-y-2">
+                            <li>Kita hidup di tengah banjir informasi (medsos, berita online).</li>
+                            <li>Banyak hoax dan disinformasi tersebar luas.</li>
+                            <li>Membantu menyaring informasi dan berpikir kritis saat online.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="page-number">8</div>
+            </div>
+
+            <!-- Page 9: Tantangan Literasi Digital -->
+            <div class="page">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <div class="prose prose-slate prose-sm mt-8">
+                        <h3 class="font-bold text-slate-900 mb-2">Fakta Penelitian:</h3>
+                        <p class="mb-4">
+                            Siswa dengan literasi digital baik cenderung berpikir kritis lebih baik. Integrasi literasi digital dalam pembelajaran meningkatkan kemampuan analitis.
+                        </p>
+                        <h3 class="font-bold text-slate-900 mb-2">Tantangan:</h3>
+                        <ul class="list-disc pl-4 space-y-2 text-red-600">
+                            <li><span class="text-slate-600">Siswa sulit bedakan info valid vs hoax.</span></li>
+                            <li><span class="text-slate-600">Guru menganggap literasi digital hanya skill teknis.</span></li>
+                            <li><span class="text-slate-600">Kesenjangan digital (akses internet/gadget) di daerah pinggiran.</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="page-number">9</div>
+            </div>
+
+            <!-- Page 10: Solusi (Sekolah) -->
+            <div class="page">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <h2 class="text-xl font-bold text-slate-800 mb-4 font-serif border-b-2 border-orange-200 pb-2">6. Solusi & Langkah Konkret</h2>
+                    
+                    <h3 class="font-bold text-orange-600 mb-2 flex items-center gap-2"><i data-lucide="school" class="w-4 h-4"></i> Di Sekolah</h3>
+                    <ul class="list-disc pl-4 space-y-2 text-sm text-slate-700">
+                        <li><strong>Perbaiki Perpustakaan:</strong> Buat nyaman, koleksi variatif, tata rapi.</li>
+                        <li><strong>Ubah Pola Ajar:</strong> Kurangi teacher-centered. Beri masalah nyata untuk didiskusikan.</li>
+                        <li><strong>Integrasi Literasi Digital:</strong> Ajarkan sistematis lewat diskusi isu aktual atau konten digital.</li>
+                        <li><strong>Latih Berpikir Kritis:</strong> Gunakan metode debat, Problem-Based Learning (PBL).</li>
+                    </ul>
+                </div>
+                <div class="page-number">10</div>
+            </div>
+
+            <!-- Page 11: Solusi (Keluarga & Pemerintah) -->
+            <div class="page">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <h3 class="font-bold text-orange-600 mt-4 mb-2 flex items-center gap-2"><i data-lucide="home" class="w-4 h-4"></i> Di Keluarga</h3>
+                    <ul class="list-disc pl-4 space-y-2 text-sm text-slate-700 mb-4">
+                        <li>Bangun minat baca sejak dini (bacakan buku).</li>
+                        <li>Buat aturan "waktu membaca" dan "bebas HP".</li>
+                        <li>Batasi penggunaan gadget.</li>
+                    </ul>
+
+                    <h3 class="font-bold text-orange-600 mb-2 flex items-center gap-2"><i data-lucide="building-2" class="w-4 h-4"></i> Kebijakan Pemerintah</h3>
+                    <ul class="list-disc pl-4 space-y-2 text-sm text-slate-700">
+                        <li>Ratakan pembangunan perpustakaan (daerah 3T).</li>
+                        <li>Kerja sama penerbit untuk buku murah.</li>
+                        <li>Pelatihan guru & kurikulum berbasis berpikir kritis.</li>
+                    </ul>
+                </div>
+                <div class="page-number">11</div>
+            </div>
+
+            <!-- Page 12: Kesimpulan -->
+            <div class="page">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <h2 class="text-xl font-bold text-slate-800 mb-4 font-serif border-b-2 border-orange-200 pb-2">7. Kesimpulan</h2>
+                    <div class="prose prose-slate prose-sm">
+                        <p class="mb-4">
+                            Minat baca rendah dan berpikir kritis lemah adalah masalah serius. Keduanya saling berkaitan dan diperkuat oleh literasi digital.
+                        </p>
+                        <p class="mb-4 font-bold text-slate-800">
+                            Perlu gerakan bersama:
+                        </p>
+                        <ul class="list-none space-y-2 pl-0">
+                            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> Sekolah mendukung budaya baca.</li>
+                            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> Guru jadi teladan & fasilitator.</li>
+                            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> Orang tua membiasakan baca sejak dini.</li>
+                            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> Pemerintah ratakan akses.</li>
+                        </ul>
+                        <p class="mt-6 text-center font-serif italic text-orange-600">
+                            "Masa depan bangsa bergantung pada kualitas SDM, dimulai dari membaca dan berpikir kritis."
+                        </p>
+                    </div>
+                </div>
+                <div class="page-number">12</div>
+            </div>
+
+            <!-- Back Cover -->
+            <div class="page cover-back" data-density="hard">
+                <div class="border-4 border-slate-700 p-8 h-full w-full flex flex-col justify-center items-center rounded-lg bg-slate-800">
+                    <img src="logo lumera.jpeg" alt="Lumera" class="w-24 h-24 rounded-xl mb-6 opacity-80 grayscale hover:grayscale-0 transition-all">
+                    <h3 class="text-xl font-bold text-slate-300 mb-2">Lumera Community</h3>
+                    <p class="text-slate-500 text-sm mb-8">Boardgame & Literacy</p>
+                    <div class="text-xs text-slate-600">
+                        www.lumera.id
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button id="prevBtn" class="p-2 rounded-full hover:bg-slate-100 text-slate-700 transition-colors">
+            <i data-lucide="chevron-left" class="w-6 h-6"></i>
+        </button>
+        <span class="text-sm font-medium text-slate-600 flex items-center">
+            Geser atau Klik
+        </span>
+        <button id="nextBtn" class="p-2 rounded-full hover:bg-slate-100 text-slate-700 transition-colors">
+            <i data-lucide="chevron-right" class="w-6 h-6"></i>
+        </button>
+    </div>
+
+    <!-- Page Flip Library -->
+    <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.js"></script>
+    
+    <script>
+        lucide.createIcons();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const pageFlip = new St.PageFlip(document.getElementById('book'), {
+                width: 400, // Base width
+                height: 600, // Base height
+                size: 'stretch',
+                minWidth: 300,
+                maxWidth: 1000,
+                minHeight: 400,
+                maxHeight: 1200,
+                maxShadowOpacity: 0.5,
+                showCover: true,
+                mobileScrollSupport: false // Disable default mobile scroll to handle gestures better
+            });
+
+            // Load pages
+            const pages = document.querySelectorAll('.page');
+            pageFlip.loadFromHTML(pages);
+
+            // Audio Logic
+            const flipSound = document.getElementById('flipSound');
+            
+            // Play sound on flip
+            pageFlip.on('flip', (e) => {
+                // Reset and play sound
+                flipSound.currentTime = 0;
+                // Only play if user has interacted (browser policy)
+                const playPromise = flipSound.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        // Auto-play was prevented
+                        console.log("Audio play prevented");
+                    });
+                }
+            });
+
+            // Button Controls
+            document.getElementById('prevBtn').addEventListener('click', () => {
+                pageFlip.flipPrev();
+            });
+
+            document.getElementById('nextBtn').addEventListener('click', () => {
+                pageFlip.flipNext();
+            });
+
+            // Keyboard Controls
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') pageFlip.flipPrev();
+                if (e.key === 'ArrowRight') pageFlip.flipNext();
+            });
+        });
+    </script>
+</body>
+</html>
