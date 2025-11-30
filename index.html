@@ -462,8 +462,42 @@
     </header>
 
     <!-- About Section -->
-    <section id="about" class="py-32 bg-white relative">
-        <div class="max-w-7xl mx-auto px-6">
+    <section id="about" class="py-32 bg-white relative overflow-hidden">
+        <!-- Floating Cards Background -->
+        <div id="floating-cards-container" class="absolute inset-0 pointer-events-none z-0">
+            <!-- Card 1 -->
+            <div class="absolute top-[10%] left-[5%] animate-float" style="animation-delay: 0s;">
+                <div class="floating-card w-24 h-32 bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-2 border-orange-100 flex items-center justify-center opacity-60 transition-transform duration-300 ease-out" data-rotate="-15" style="transform: rotate(-15deg);">
+                    <i data-lucide="brain-circuit" class="text-orange-200 w-10 h-10"></i>
+                </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="absolute top-[20%] right-[10%] animate-float" style="animation-delay: 1s;">
+                <div class="floating-card w-20 h-28 bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-2 border-purple-100 flex items-center justify-center opacity-60 transition-transform duration-300 ease-out" data-rotate="10" style="transform: rotate(10deg);">
+                    <i data-lucide="heart-handshake" class="text-purple-200 w-8 h-8"></i>
+                </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="absolute bottom-[20%] left-[8%] animate-float" style="animation-delay: 2s;">
+                <div class="floating-card w-28 h-36 bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-2 border-cyan-100 flex items-center justify-center opacity-60 transition-transform duration-300 ease-out" data-rotate="-5" style="transform: rotate(-5deg);">
+                    <i data-lucide="book-open-check" class="text-cyan-200 w-12 h-12"></i>
+                </div>
+            </div>
+            <!-- Card 4 -->
+            <div class="absolute bottom-[30%] right-[5%] animate-float" style="animation-delay: 1.5s;">
+                <div class="floating-card w-24 h-32 bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-2 border-green-100 flex items-center justify-center opacity-60 transition-transform duration-300 ease-out" data-rotate="20" style="transform: rotate(20deg);">
+                    <i data-lucide="users" class="text-green-200 w-10 h-10"></i>
+                </div>
+            </div>
+             <!-- Card 5 (Center-ish) -->
+            <div class="absolute top-[45%] left-[45%] animate-float" style="animation-delay: 0.5s;">
+                <div class="floating-card w-16 h-24 bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-2 border-pink-100 flex items-center justify-center opacity-40 transition-transform duration-300 ease-out" data-rotate="5" style="transform: rotate(5deg);">
+                    <i data-lucide="lightbulb" class="text-pink-200 w-6 h-6"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <div class="order-2 lg:order-1">
                     <div class="reveal">
@@ -835,6 +869,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         // Initialize Icons
         lucide.createIcons();
@@ -1400,6 +1435,49 @@
 
             applyHeroTransform(xPos, yPos);
         });
+
+        // --- Floating Cards Scatter Effect (About Section) ---
+        const aboutSection = document.getElementById('about');
+        if (aboutSection) {
+            aboutSection.addEventListener('mousemove', (e) => {
+                const rect = aboutSection.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                document.querySelectorAll('.floating-card').forEach(card => {
+                    const cardRect = card.getBoundingClientRect();
+                    // Calculate center of card relative to section
+                    const cardX = cardRect.left - rect.left + cardRect.width / 2;
+                    const cardY = cardRect.top - rect.top + cardRect.height / 2;
+
+                    const distX = mouseX - cardX;
+                    const distY = mouseY - cardY;
+                    const distance = Math.sqrt(distX * distX + distY * distY);
+                    
+                    const maxDist = 300; // Interaction radius
+                    
+                    if (distance < maxDist) {
+                        const force = (maxDist - distance) / maxDist; // 0 to 1 (1 is closest)
+                        const moveX = -(distX / distance) * force * 60; // Move away max 60px
+                        const moveY = -(distY / distance) * force * 60;
+                        const baseRotate = parseFloat(card.getAttribute('data-rotate'));
+                        const rotate = baseRotate + (force * 30); // Spin extra
+
+                        card.style.transform = `translate(${moveX}px, ${moveY}px) rotate(${rotate}deg)`;
+                    } else {
+                        const baseRotate = parseFloat(card.getAttribute('data-rotate'));
+                        card.style.transform = `translate(0, 0) rotate(${baseRotate}deg)`;
+                    }
+                });
+            });
+
+            aboutSection.addEventListener('mouseleave', () => {
+                document.querySelectorAll('.floating-card').forEach(card => {
+                    const baseRotate = parseFloat(card.getAttribute('data-rotate'));
+                    card.style.transform = `translate(0, 0) rotate(${baseRotate}deg)`;
+                });
+            });
+        }
     </script>
 </body>
 </html>

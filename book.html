@@ -92,24 +92,82 @@
             }
         }
 
-        /* Cover Styles */
+        /* Hardcover Effect */
         .cover {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            color: white;
+            background: 
+                linear-gradient(90deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 15%, rgba(255,255,255,0) 100%), /* Spine highlight */
+                url("https://www.transparenttextures.com/patterns/leather.png"), /* Leather texture */
+                linear-gradient(135deg, #1e293b 0%, #0f172a 100%); /* Base color */
+            box-shadow: 
+                inset 4px 0 10px rgba(0,0,0,0.5), /* Spine shadow inner */
+                inset -2px 0 5px rgba(255,255,255,0.1); /* Edge highlight */
+            border: none;
+            position: relative;
+        }
+
+        /* Spine Effect (Left edge) */
+        .cover::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 20px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(0,0,0,0.2), rgba(255,255,255,0.1));
+            border-right: 1px solid rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        /* Gold Emboss Effect for Text */
+        .gold-text {
+            background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* Tutorial Overlay */
+        #tutorial-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 100;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
-            border: 2px solid #334155;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
         }
         
-        .cover-back {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        #tutorial-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .hand-anim {
+            animation: swipeHint 2s infinite;
+        }
+
+        @keyframes swipeHint {
+            0% { transform: translateX(20px) rotate(10deg); opacity: 0; }
+            20% { opacity: 1; }
+            80% { transform: translateX(-20px) rotate(-10deg); opacity: 1; }
+            100% { transform: translateX(-20px) rotate(-10deg); opacity: 0; }
+        }
+
+        /* TOC Links */
+        .toc-item {
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px dashed #cbd5e1;
+            padding-bottom: 4px;
+        }
+        .toc-item:hover {
+            color: #f97316; /* Orange-500 */
+            padding-left: 5px;
+            border-bottom-color: #f97316;
         }
 
         /* Mobile Controls */
@@ -150,24 +208,84 @@
     <!-- Audio Element -->
     <audio id="flipSound" src="pageturn-102978.mp3" preload="auto"></audio>
 
+    <!-- Tutorial Overlay -->
+    <div id="tutorial-overlay" class="active">
+        <div class="text-center text-white">
+            <div class="mb-4 flex justify-center">
+                <i data-lucide="hand" class="w-16 h-16 hand-anim"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Cara Membaca</h3>
+            <p class="text-sm opacity-90 mb-6">Klik pojok halaman atau geser<br>untuk membalik buku.</p>
+            <button id="closeTutorial" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-full text-sm font-bold transition-colors shadow-lg">
+                Mengerti
+            </button>
+        </div>
+    </div>
+
     <div class="book-container">
         <!-- The Book -->
         <div id="book" class="shadow-2xl">
             
             <!-- Cover -->
             <div class="page cover" data-density="hard">
-                <div class="border-2 md:border-4 border-orange-500/30 p-4 md:p-8 h-full w-full flex flex-col justify-center items-center rounded-lg">
-                    <div class="w-16 h-16 md:w-20 md:h-20 bg-orange-500 rounded-full flex items-center justify-center mb-4 md:mb-6 shadow-lg shadow-orange-500/20">
+                <div class="border-2 md:border-4 border-orange-500/50 p-4 md:p-8 h-full w-full flex flex-col justify-center items-center rounded-lg" style="box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+                    <div class="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center mb-4 md:mb-6 shadow-lg shadow-orange-500/30 border-2 border-orange-300">
                         <i data-lucide="book-open" class="w-8 h-8 md:w-10 md:h-10 text-white"></i>
                     </div>
-                    <h1 class="text-2xl md:text-4xl font-bold mb-2 md:mb-4 font-serif tracking-wide leading-tight">Literasi &<br>Berpikir Kritis</h1>
-                    <p class="text-slate-400 text-[10px] md:text-sm uppercase tracking-widest mb-6 md:mb-8">Membangun Masa Depan Indonesia</p>
-                    <div class="w-12 md:w-16 h-1 bg-orange-500 rounded-full"></div>
-                    <p class="mt-auto text-[10px] md:text-xs text-slate-500">Lumera Community Library</p>
+                    <h1 class="text-2xl md:text-4xl font-bold mb-2 md:mb-4 font-serif tracking-wide leading-tight gold-text">Literasi &<br>Berpikir Kritis</h1>
+                    <p class="text-slate-300 text-[10px] md:text-sm uppercase tracking-widest mb-6 md:mb-8 font-medium">Membangun Masa Depan Indonesia</p>
+                    <div class="w-12 md:w-16 h-1 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full shadow"></div>
+                    <p class="mt-auto text-[10px] md:text-xs text-slate-400 font-serif">Lumera Community Library</p>
                 </div>
             </div>
 
-            <!-- Page 1: Gambaran Umum -->
+            <!-- Page 1: Daftar Isi (New) -->
+            <div class="page">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <h2 class="text-lg font-bold text-slate-800 mb-4 font-serif border-b-2 border-orange-200 pb-2 text-center">Daftar Isi</h2>
+                    <ul class="space-y-3 text-xs font-serif text-slate-700">
+                        <li class="toc-item flex justify-between" onclick="flipToPage(2)">
+                            <span>Gambaran Umum</span>
+                            <span class="text-slate-400">1</span>
+                        </li>
+                        <li class="toc-item flex justify-between" onclick="flipToPage(3)">
+                            <span>Kenapa Minat Baca Rendah?</span>
+                            <span class="text-slate-400">2</span>
+                        </li>
+                        <li class="toc-item flex justify-between" onclick="flipToPage(5)">
+                            <span>Dampak Minat Baca Rendah</span>
+                            <span class="text-slate-400">4</span>
+                        </li>
+                        <li class="toc-item flex justify-between" onclick="flipToPage(6)">
+                            <span>Berpikir Kritis</span>
+                            <span class="text-slate-400">5</span>
+                        </li>
+                        <li class="toc-item flex justify-between" onclick="flipToPage(8)">
+                            <span>Hubungan Membaca & Kritis</span>
+                            <span class="text-slate-400">7</span>
+                        </li>
+                        <li class="toc-item flex justify-between" onclick="flipToPage(9)">
+                            <span>Literasi Digital</span>
+                            <span class="text-slate-400">8</span>
+                        </li>
+                        <li class="toc-item flex justify-between" onclick="flipToPage(11)">
+                            <span>Solusi & Langkah Nyata</span>
+                            <span class="text-slate-400">10</span>
+                        </li>
+                        <li class="toc-item flex justify-between" onclick="flipToPage(13)">
+                            <span>Kesimpulan</span>
+                            <span class="text-slate-400">12</span>
+                        </li>
+                    </ul>
+                    <div class="mt-8 text-center">
+                        <i data-lucide="feather" class="w-6 h-6 text-slate-300 mx-auto"></i>
+                    </div>
+                </div>
+                <div class="page-number">i</div>
+            </div>
+
+            <!-- Page 2: Gambaran Umum (Previously Page 1) -->
             <div class="page">
                 <div class="paper-texture"></div>
                 <div class="page-content">
@@ -484,8 +602,32 @@
     
     <script>
         lucide.createIcons();
+        
+        // Global function for TOC
+        let globalPageFlip;
+        function flipToPage(index) {
+            if(globalPageFlip) {
+                globalPageFlip.flip(index);
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Tutorial Logic
+            const tutorialOverlay = document.getElementById('tutorial-overlay');
+            const closeTutorialBtn = document.getElementById('closeTutorial');
+            
+            // Check if tutorial was already shown in this session
+            if (sessionStorage.getItem('lumera_book_tutorial_shown')) {
+                tutorialOverlay.classList.remove('active');
+            }
+
+            function closeTutorial() {
+                tutorialOverlay.classList.remove('active');
+                sessionStorage.setItem('lumera_book_tutorial_shown', 'true');
+            }
+
+            closeTutorialBtn.addEventListener('click', closeTutorial);
+            
             // Determine initial size based on viewport
             const isMobile = window.innerWidth < 768;
             
@@ -506,6 +648,9 @@
             // Load pages
             const pages = document.querySelectorAll('.page');
             pageFlip.loadFromHTML(pages);
+            
+            // Assign to global variable for TOC
+            globalPageFlip = pageFlip;
 
             // Audio Logic
             const flipSound = document.getElementById('flipSound');
@@ -513,6 +658,11 @@
             // Play sound when flipping starts (animation state)
             pageFlip.on('changeState', (e) => {
                 if (e.data === 'flipping') {
+                    // Close tutorial if user flips page
+                    if (tutorialOverlay.classList.contains('active')) {
+                        closeTutorial();
+                    }
+
                     flipSound.currentTime = 0;
                     const playPromise = flipSound.play();
                     if (playPromise !== undefined) {
