@@ -1011,7 +1011,7 @@
             let targetRotX = 0;
             let targetRotY = 0;
 
-            // Drag Logic
+            // Drag Logic (Mouse)
             container.addEventListener('mousedown', (e) => {
                 isDragging = true;
                 startX = e.clientX;
@@ -1028,9 +1028,6 @@
                 targetRotY = currentRotY + deltaX * 0.5;
                 targetRotX = currentRotX - deltaY * 0.5;
                 
-                // Limit X rotation to prevent flipping upside down too easily (optional)
-                // targetRotX = Math.max(-60, Math.min(60, targetRotX));
-
                 card.style.transform = `translateZ(-50px) rotateX(${targetRotX}deg) rotateY(${targetRotY}deg)`;
             });
 
@@ -1040,6 +1037,39 @@
                     currentRotX = targetRotX;
                     currentRotY = targetRotY;
                     container.style.cursor = 'grab';
+                }
+            });
+
+            // Drag Logic (Touch - Mobile)
+            container.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                card.classList.remove('auto-rotate');
+            }, { passive: false });
+
+            window.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                
+                // Prevent scrolling ONLY if touching inside the container
+                if(e.target.closest('#product-viewer-container')) {
+                     e.preventDefault(); 
+                }
+
+                const deltaX = e.touches[0].clientX - startX;
+                const deltaY = e.touches[0].clientY - startY;
+                
+                targetRotY = currentRotY + deltaX * 0.5;
+                targetRotX = currentRotX - deltaY * 0.5;
+                
+                card.style.transform = `translateZ(-50px) rotateX(${targetRotX}deg) rotateY(${targetRotY}deg)`;
+            }, { passive: false });
+
+            window.addEventListener('touchend', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    currentRotX = targetRotX;
+                    currentRotY = targetRotY;
                 }
             });
 
