@@ -1162,13 +1162,34 @@
         // --- Preloader Logic ---
         window.addEventListener('load', () => {
             const preloader = document.getElementById('preloader');
-            // Wait for handwriting animation to finish (approx 3s total)
-            setTimeout(() => {
-                preloader.classList.add('hidden');
+            const handwritingWrapper = document.querySelector('.handwriting-wrapper');
+            
+            // Cek apakah user sudah melihat welcome screen di sesi ini
+            if (sessionStorage.getItem('lumera_welcome_shown')) {
+                // Jika sudah (refresh atau kembali dari halaman lain), sembunyikan teks
+                if (handwritingWrapper) {
+                    handwritingWrapper.style.display = 'none';
+                }
+                
+                // Tampilkan logo saja dengan durasi lebih cepat (1 detik)
                 setTimeout(() => {
-                    preloader.style.display = 'none';
-                }, 800);
-            }, 3500); 
+                    preloader.classList.add('hidden');
+                    setTimeout(() => {
+                        preloader.style.display = 'none';
+                    }, 800);
+                }, 1000);
+            } else {
+                // Jika belum (pertama kali buka tab), tandai sudah dilihat
+                sessionStorage.setItem('lumera_welcome_shown', 'true');
+                
+                // Tampilkan animasi lengkap dengan teks (3.5 detik)
+                setTimeout(() => {
+                    preloader.classList.add('hidden');
+                    setTimeout(() => {
+                        preloader.style.display = 'none';
+                    }, 800);
+                }, 3500); 
+            }
         });
 
         // --- Typewriter Logic ---
