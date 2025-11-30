@@ -193,6 +193,13 @@
             body { cursor: none; }
             a, button, .cursor-pointer { cursor: none; }
         }
+
+        /* --- 3D Hero Text Effect --- */
+        .hero-title-3d {
+            transition: text-shadow 0.1s, transform 0.1s;
+            transform-style: preserve-3d;
+            will-change: transform, text-shadow;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-600 antialiased selection:bg-orange-200 selection:text-orange-900 overflow-x-hidden">
@@ -267,7 +274,7 @@
                 Komunitas Board Game & Edukasi
             </div>
             
-            <h1 class="reveal stagger-1 text-5xl md:text-8xl font-bold text-slate-900 tracking-tight mb-8 leading-[1.1]">
+            <h1 id="hero-title" class="hero-title-3d reveal stagger-1 text-5xl md:text-8xl font-bold text-slate-900 tracking-tight mb-8 leading-[1.1]">
                 Membangun <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-pink-600">Komunitas</span>, <br>
                 Menciptakan <span class="relative inline-block">
                     Keseruan
@@ -934,6 +941,15 @@
                 mouseY = (event.clientY - windowHalfY);
             });
 
+            // Mobile Gyroscope Interaction for Background
+            window.addEventListener('deviceorientation', (e) => {
+                if (e.gamma && e.beta) {
+                    // Amplify the tilt for better effect
+                    mouseX = e.gamma * 10; 
+                    mouseY = (e.beta - 45) * 10;
+                }
+            });
+
             // Animation Loop
             const animate = () => {
                 requestAnimationFrame(animate);
@@ -1099,6 +1115,52 @@
             document.getElementById('nextBtn').addEventListener('click', () => animateFlip('next'));
             document.getElementById('prevBtn').addEventListener('click', () => animateFlip('prev'));
         };
+
+        // --- 3D Hero Text Logic (Mouse & Gyroscope) ---
+        const heroTitle = document.getElementById('hero-title');
+        
+        // Helper to apply 3D transform
+        const applyHeroTransform = (xPos, yPos) => {
+            if (!heroTitle) return;
+            
+            // Limit rotation
+            const rotateX = -yPos * 10; // Max 10deg
+            const rotateY = xPos * 10;
+
+            // Apply transform
+            heroTitle.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            
+            // Apply dynamic shadow
+            const shadowX = -xPos * 20;
+            const shadowY = -yPos * 20;
+            heroTitle.style.textShadow = `${shadowX}px ${shadowY}px 30px rgba(0,0,0,0.15)`;
+        };
+
+        // Mouse Interaction
+        document.addEventListener('mousemove', (e) => {
+            const { clientX, clientY } = e;
+            const { innerWidth, innerHeight } = window;
+            
+            // Calculate percentage from center (-1 to 1)
+            const xPos = (clientX / innerWidth - 0.5) * 2;
+            const yPos = (clientY / innerHeight - 0.5) * 2;
+
+            applyHeroTransform(xPos, yPos);
+        });
+
+        // Mobile Gyroscope Interaction
+        window.addEventListener('deviceorientation', (e) => {
+            // Gamma: Left/Right tilt (-90 to 90)
+            // Beta: Front/Back tilt (-180 to 180)
+            
+            let xPos = 0;
+            let yPos = 0;
+
+            if (e.gamma) xPos = Math.min(Math.max(e.gamma / 45, -1), 1); // Clamp -1 to 1
+            if (e.beta)  yPos = Math.min(Math.max((e.beta - 45) / 45, -1), 1); // Offset for holding position
+
+            applyHeroTransform(xPos, yPos);
+        });
     </script>
 </body>
 </html>
