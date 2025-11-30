@@ -6,10 +6,110 @@
     <title>Lumera - Komunitas & Boardgame</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         
+        /* --- CSS 3D Card Styles --- */
+        .scene {
+            width: 280px;
+            height: 400px;
+            perspective: 1000px;
+            margin: auto;
+            cursor: grab;
+        }
+        .scene:active {
+            cursor: grabbing;
+        }
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: translateZ(-50px) rotateY(0deg);
+            transition: transform 0.1s;
+        }
+        .card.auto-rotate {
+            animation: spin 15s infinite linear;
+        }
+        .card__face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            background: #fff;
+            overflow: hidden;
+            border: 4px solid white;
+        }
+        
+        .card__face--front {
+            transform: rotateY(0deg);
+        }
+        .card__face--back {
+            transform: rotateY(180deg);
+        }
+
+        .card__face img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        @keyframes spin {
+            from { transform: translateZ(-50px) rotateY(0deg); }
+            to { transform: translateZ(-50px) rotateY(360deg); }
+        }
+
+        /* Swiper Custom Styles */
+        .swiper {
+            width: 100%;
+            padding-top: 50px;
+            padding-bottom: 50px;
+        }
+        .swiper-slide {
+            background-position: center;
+            background-size: cover;
+            width: 300px;
+            height: 400px;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+            filter: blur(4px);
+            opacity: 0.6;
+            transition: all 0.3s;
+        }
+        .swiper-slide-active {
+            filter: blur(0px);
+            opacity: 1;
+            box-shadow: 0 20px 60px rgba(124, 58, 237, 0.3); /* Purple glow */
+        }
+        .swiper-slide img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
+        }
+        .swiper-pagination-bullet-active {
+            background-color: #9333ea !important; /* Purple-600 */
+        }
+        .swiper-button-next, .swiper-button-prev {
+            color: #9333ea !important;
+            background: rgba(255,255,255,0.8);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .swiper-button-next:after, .swiper-button-prev:after {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
         /* Custom Animation Utilities */
         .reveal {
             opacity: 0;
@@ -55,9 +155,64 @@
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Custom Cursor */
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #f97316;
+        }
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #f97316;
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+        body:hover .cursor-outline { opacity: 1; }
+        
+        /* Hover state */
+        body.hovering .cursor-outline {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(249, 115, 22, 0.1);
+            border-color: transparent;
+        }
+
+        /* Hide default cursor on desktop */
+        @media (pointer: fine) {
+            body { cursor: none; }
+            a, button, .cursor-pointer { cursor: none; }
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-600 antialiased selection:bg-orange-200 selection:text-orange-900 overflow-x-hidden">
+
+    <!-- Custom Cursor Elements -->
+    <div class="cursor-dot hidden md:block"></div>
+    <div class="cursor-outline hidden md:block"></div>
+
+    <!-- Fixed Parallax Background Layers -->
+    <div class="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+        <!-- 3D Canvas Layer -->
+        <canvas id="canvas3d" class="absolute inset-0 w-full h-full opacity-60"></canvas>
+        
+        <!-- Blob 1 -->
+        <div class="parallax-layer absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-orange-300/20 rounded-full blur-[100px] mix-blend-multiply"></div>
+        <!-- Blob 2 -->
+        <div class="parallax-layer absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] bg-purple-300/20 rounded-full blur-[100px] mix-blend-multiply"></div>
+        <!-- Blob 3 -->
+        <div class="parallax-layer absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] bg-cyan-300/20 rounded-full blur-[100px] mix-blend-multiply"></div>
+    </div>
 
     <!-- Navigation -->
     <nav id="navbar" class="fixed top-0 w-full z-50 transition-all duration-300 bg-white/70 backdrop-blur-xl border-b border-slate-200/50">
@@ -101,12 +256,7 @@
 
     <!-- Hero Section -->
     <header class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden min-h-screen flex items-center justify-center">
-        <!-- Background Decor -->
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full z-0 pointer-events-none">
-            <div class="absolute top-20 left-10 w-96 h-96 bg-orange-300/30 rounded-full blur-3xl mix-blend-multiply animate-blob"></div>
-            <div class="absolute top-40 right-10 w-96 h-96 bg-purple-300/30 rounded-full blur-3xl mix-blend-multiply animate-blob animation-delay-2000"></div>
-            <div class="absolute -bottom-8 left-1/2 w-96 h-96 bg-cyan-300/30 rounded-full blur-3xl mix-blend-multiply animate-blob animation-delay-4000"></div>
-        </div>
+        <!-- Background Decor Removed (Moved to Global Parallax) -->
 
         <div class="relative z-10 max-w-4xl mx-auto px-6 text-center">
             <div class="reveal inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/50 border border-slate-200/60 backdrop-blur-md text-slate-600 text-sm font-medium mb-8 hover:bg-white hover:border-orange-200 hover:text-orange-600 transition-all duration-300 cursor-default shadow-sm hover:shadow-md">
@@ -132,7 +282,7 @@
             </p>
             
             <div class="reveal stagger-3 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="#join" class="group w-full sm:w-auto px-8 py-4 bg-slate-900 text-white rounded-full font-semibold hover:bg-slate-800 transition-all hover:scale-105 hover:shadow-xl hover:shadow-slate-900/20 flex items-center justify-center gap-2 relative overflow-hidden">
+                <a href="#join" class="confetti-btn group w-full sm:w-auto px-8 py-4 bg-slate-900 text-white rounded-full font-semibold hover:bg-slate-800 transition-all hover:scale-105 hover:shadow-xl hover:shadow-slate-900/20 flex items-center justify-center gap-2 relative overflow-hidden">
                     <span class="relative z-10 flex items-center gap-2">Gabung Sekarang <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i></span>
                     <div class="absolute inset-0 bg-gradient-to-r from-slate-800 to-slate-900 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </a>
@@ -157,7 +307,7 @@
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <!-- Value 1 -->
-                        <div class="reveal stagger-1 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-orange-200 transition-all duration-300 group cursor-default">
+                        <div class="js-tilt reveal stagger-1 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-orange-200 transition-all duration-300 group cursor-default">
                             <div class="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600 mb-4 group-hover:scale-110 group-hover:bg-orange-100 transition-all">
                                 <i data-lucide="brain-circuit" class="w-6 h-6"></i>
                             </div>
@@ -165,7 +315,7 @@
                             <p class="text-sm text-slate-500 leading-relaxed">Membangun pola pikir kritis dan strategis dalam menghadapi tantangan.</p>
                         </div>
                         <!-- Value 2 -->
-                        <div class="reveal stagger-2 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-purple-200 transition-all duration-300 group cursor-default">
+                        <div class="js-tilt reveal stagger-2 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-purple-200 transition-all duration-300 group cursor-default">
                             <div class="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 mb-4 group-hover:scale-110 group-hover:bg-purple-100 transition-all">
                                 <i data-lucide="heart-handshake" class="w-6 h-6"></i>
                             </div>
@@ -173,7 +323,7 @@
                             <p class="text-sm text-slate-500 leading-relaxed">Belajar memahami perspektif lawan dan kawan dalam dinamika sosial.</p>
                         </div>
                         <!-- Value 3 -->
-                        <div class="reveal stagger-1 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-cyan-200 transition-all duration-300 group cursor-default">
+                        <div class="js-tilt reveal stagger-1 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-cyan-200 transition-all duration-300 group cursor-default">
                             <div class="w-12 h-12 rounded-xl bg-cyan-50 flex items-center justify-center text-cyan-600 mb-4 group-hover:scale-110 group-hover:bg-cyan-100 transition-all">
                                 <i data-lucide="book-open-check" class="w-6 h-6"></i>
                             </div>
@@ -181,7 +331,7 @@
                             <p class="text-sm text-slate-500 leading-relaxed">Meningkatkan kemampuan memahami informasi yang kompleks.</p>
                         </div>
                         <!-- Value 4 -->
-                        <div class="reveal stagger-2 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-green-200 transition-all duration-300 group cursor-default">
+                        <div class="js-tilt reveal stagger-2 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-green-200 transition-all duration-300 group cursor-default">
                             <div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-green-600 mb-4 group-hover:scale-110 group-hover:bg-green-100 transition-all">
                                 <i data-lucide="users" class="w-6 h-6"></i>
                             </div>
@@ -219,7 +369,7 @@
     </section>
 
     <!-- Single Game Showcase -->
-    <section id="game" class="py-32 bg-slate-50 border-t border-slate-200">
+    <section id="game" class="relative py-32 bg-slate-50 border-t border-slate-200">
         <div class="max-w-7xl mx-auto px-6">
             <div class="reveal text-center max-w-2xl mx-auto mb-16">
                 <span class="inline-block px-3 py-1 rounded-full bg-purple-100 text-purple-700 font-semibold text-xs tracking-wider uppercase mb-4">Featured Boardgame</span>
@@ -228,44 +378,43 @@
             </div>
 
             <!-- Single Feature Card -->
-            <div class="reveal stagger-1 bg-white rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-2xl shadow-purple-900/5 hover:shadow-purple-900/10 transition-all duration-500">
-                <div class="grid grid-cols-1 lg:grid-cols-2">
-                    <!-- Image Side -->
-                    <div class="h-auto bg-purple-50 relative overflow-hidden group p-4 flex flex-col justify-center">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-md cursor-pointer group/img" onclick="openLightbox('boardgame.jpeg')">
-                                 <img src="boardgame.jpeg" class="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500" alt="Lumera Game 1">
-                                 <div class="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors flex items-center justify-center">
-                                    <i data-lucide="maximize-2" class="w-8 h-8 text-white opacity-0 group-hover/img:opacity-100 transition-opacity"></i>
-                                 </div>
-                            </div>
-                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-md cursor-pointer group/img" onclick="openLightbox('boardgame2.jpeg')">
-                                 <img src="boardgame2.jpeg" class="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500" alt="Lumera Game 2">
-                                 <div class="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors flex items-center justify-center">
-                                    <i data-lucide="maximize-2" class="w-8 h-8 text-white opacity-0 group-hover/img:opacity-100 transition-opacity"></i>
-                                 </div>
-                            </div>
-                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-md cursor-pointer group/img" onclick="openLightbox('boardgame3.jpeg')">
-                                 <img src="boardgame3.jpeg" class="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500" alt="Lumera Game 3">
-                                 <div class="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors flex items-center justify-center">
-                                    <i data-lucide="maximize-2" class="w-8 h-8 text-white opacity-0 group-hover/img:opacity-100 transition-opacity"></i>
-                                 </div>
-                            </div>
-                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-md cursor-pointer group/img" onclick="openLightbox('boardgame4.jpeg')">
-                                 <img src="boardgame4.jpeg" class="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500" alt="Lumera Game 4">
-                                 <div class="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors flex items-center justify-center">
-                                    <i data-lucide="maximize-2" class="w-8 h-8 text-white opacity-0 group-hover/img:opacity-100 transition-opacity"></i>
-                                 </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <!-- Image Side (CSS 3D Cube) -->
+                <div class="reveal stagger-1 w-full flex justify-center">
+                    <div id="product-viewer-container" class="w-full max-w-lg h-[400px] relative bg-slate-50 rounded-[2.5rem] border border-slate-200 shadow-2xl shadow-purple-900/10 flex items-center justify-center overflow-hidden group">
+                        
+                        <!-- 3D Scene -->
+                        <div class="scene">
+                            <div class="card auto-rotate" id="card">
+                                <div class="card__face card__face--front">
+                                    <img id="card-img-front" src="boardgame1.jpeg" alt="Front" onerror="this.src='https://placehold.co/600x800/581c87/white?text=Lumera+Game'">
+                                </div>
+                                <div class="card__face card__face--back">
+                                    <img id="card-img-back" src="boardgame2.jpeg" alt="Back" onerror="this.src='https://placehold.co/600x800/581c87/white?text=Back+Side'">
+                                </div>
                             </div>
                         </div>
-                        <div class="absolute bottom-6 left-6 z-20 flex gap-2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                            <span class="bg-white/90 backdrop-blur px-4 py-2 rounded-full text-xs font-bold text-purple-700 shadow-lg border border-purple-100 uppercase tracking-wide">Strategy</span>
-                            <span class="bg-white/90 backdrop-blur px-4 py-2 rounded-full text-xs font-bold text-slate-700 shadow-lg border border-slate-100 uppercase tracking-wide">Environment</span>
+                        
+                        <!-- Overlay UI -->
+                        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur px-5 py-2.5 rounded-full text-sm font-bold text-slate-700 shadow-lg border border-slate-100 pointer-events-none flex items-center gap-2 transition-opacity group-hover:opacity-0">
+                            <i data-lucide="move-3d" class="w-5 h-5 text-purple-600"></i> Drag untuk memutar 360°
                         </div>
-                    </div>
 
-                    <!-- Content Side -->
-                    <div class="p-8 md:p-12 lg:p-16 flex flex-col justify-center relative">
+                        <!-- Navigation Buttons -->
+                        <button id="prevBtn" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-3 rounded-full shadow-lg text-purple-700 transition-all hover:scale-110 z-20">
+                            <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                        </button>
+                        <button id="nextBtn" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-3 rounded-full shadow-lg text-purple-700 transition-all hover:scale-110 z-20">
+                            <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                        </button>
+
+                        <!-- Zoom Button -->
+                        <button onclick="openLightbox(currentImage)" class="absolute top-6 right-6 bg-white/90 p-3 rounded-full shadow-lg hover:bg-purple-50 text-slate-600 hover:text-purple-600 transition-all z-10" title="Lihat Foto Asli">
+                            <i data-lucide="maximize-2" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>                <!-- Content Side -->
+                <div class="reveal stagger-2 flex flex-col justify-center relative">
                         <div class="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
                             <i data-lucide="dice-6" class="w-48 h-48"></i>
                         </div>
@@ -341,27 +490,27 @@
                         <div class="mb-10">
                             <h4 class="font-bold text-slate-900 mb-4">Peran Pemain (Roles)</h4>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
+                                <div class="js-tilt bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
                                     <div class="font-bold text-purple-700 text-sm mb-1">Fact Finder (Penelusur Fakta)</div>
                                     <p class="text-xs text-slate-600">Menjamin jawaban berbasis data, bukti, atau informasi yang dapat diverifikasi.</p>
                                 </div>
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
+                                <div class="js-tilt bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
                                     <div class="font-bold text-purple-700 text-sm mb-1">Analyst (Analis Logika)</div>
                                     <p class="text-xs text-slate-600">Menyusun nalar, hubungan sebab-akibat, dan kerangka argumentasi.</p>
                                 </div>
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
+                                <div class="js-tilt bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
                                     <div class="font-bold text-purple-700 text-sm mb-1">Communicator (Penyampai & Penyusun Pesan)</div>
                                     <p class="text-xs text-slate-600">Mengemas jawaban yang berkaitan dengan penyampaian pesan atau komunikasi efektif.</p>
                                 </div>
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
+                                <div class="js-tilt bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
                                     <div class="font-bold text-purple-700 text-sm mb-1">Empathizer (Penjaga Nilai & Dampak Sosial)</div>
                                     <p class="text-xs text-slate-600">Memastikan jawaban mempertimbangkan nilai moral, empati, dan dampak sosial.</p>
                                 </div>
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
+                                <div class="js-tilt bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
                                     <div class="font-bold text-purple-700 text-sm mb-1">Strategist (Perencana Taktis)</div>
                                     <p class="text-xs text-slate-600">Memberikan strategi penyelesaian masalah yang efektif dan terukur.</p>
                                 </div>
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
+                                <div class="js-tilt bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
                                     <div class="font-bold text-purple-700 text-sm mb-1">Creative Thinker (Inovator & Pencetus Ide)</div>
                                     <p class="text-xs text-slate-600">Menghasilkan alternatif solusi kreatif, inovatif, dan pendekatan baru.</p>
                                 </div>
@@ -396,7 +545,7 @@
                         </div>
 
                         <div class="flex flex-col sm:flex-row gap-4">
-                            <a href="https://wa.me/6285776434538?text=Halo%20aku%20ingin%20bergabung%20dengan%20keseruan%20boardgame%20Lumera" class="flex-1 inline-flex items-center justify-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-full font-bold hover:bg-slate-800 transition-all hover:scale-[1.02] shadow-xl shadow-slate-900/10">
+                            <a href="https://wa.me/6285776434538?text=Halo%20aku%20ingin%20bergabung%20dengan%20keseruan%20boardgame%20Lumera" class="confetti-btn flex-1 inline-flex items-center justify-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-full font-bold hover:bg-slate-800 transition-all hover:scale-[1.02] shadow-xl shadow-slate-900/10">
                                 Pre-Order Sekarang
                             </a>
                             <a href="#" class="flex-1 inline-flex items-center justify-center gap-2 bg-purple-50 text-purple-700 border border-purple-100 px-8 py-4 rounded-full font-bold hover:bg-purple-100 transition-all">
@@ -404,7 +553,6 @@
                             </a>
                         </div>
                     </div>
-                </div>
             </div>
         </div>
     </section>
@@ -419,7 +567,7 @@
                     <p class="text-lg text-slate-600 mt-6 leading-relaxed">Kami membawa keseruan dan pembelajaran langsung ke sekolah-sekolah untuk menyebarkan semangat literasi melalui metode gamifikasi.</p>
                 </div>
                 <div class="reveal stagger-2">
-                    <a href="https://wa.me/6285776434538?text=halo%20Lumera%2C%20kami%20menunggu%20kedatangan%20lumera%20di%20sekolah%20kami%3A%0A%0AAsal%20Sekolah%3A%0A%0A" class="inline-flex items-center gap-2 text-slate-900 font-bold bg-slate-100 px-6 py-3 rounded-full hover:bg-slate-200 hover:gap-4 transition-all duration-300">
+                    <a href="https://wa.me/6285776434538?text=halo%20Lumera%2C%20kami%20menunggu%20kedatangan%20lumera%20di%20sekolah%20kami%3A%0A%0AAsal%20Sekolah%3A%0A%0A" class="confetti-btn inline-flex items-center gap-2 text-slate-900 font-bold bg-slate-100 px-6 py-3 rounded-full hover:bg-slate-200 hover:gap-4 transition-all duration-300">
                         Undang Lumera <i data-lucide="arrow-right" class="w-5 h-5"></i>
                     </a>
                 </div>
@@ -523,9 +671,80 @@
         <img id="lightbox-img" src="" alt="Full Preview" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
     </div>
 
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+
     <script>
         // Initialize Icons
         lucide.createIcons();
+
+        // --- Custom Cursor Logic ---
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+
+        if (window.matchMedia("(pointer: fine)").matches) {
+            window.addEventListener('mousemove', (e) => {
+                const posX = e.clientX;
+                const posY = e.clientY;
+
+                cursorDot.style.left = `${posX}px`;
+                cursorDot.style.top = `${posY}px`;
+
+                cursorOutline.animate({
+                    left: `${posX}px`,
+                    top: `${posY}px`
+                }, { duration: 500, fill: "forwards" });
+            });
+
+            // Add hover effect to interactive elements
+            const interactiveElements = document.querySelectorAll('a, button, .cursor-pointer, .js-tilt');
+            interactiveElements.forEach(el => {
+                el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+                el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+            });
+        }
+
+        // --- Confetti Effect ---
+        function fireConfetti() {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#f97316', '#a855f7', '#06b6d4'],
+                disableForReducedMotion: true
+            });
+        }
+
+        document.querySelectorAll('.confetti-btn').forEach(btn => {
+            btn.addEventListener('click', fireConfetti);
+        });
+
+        // --- Initialize Vanilla Tilt ---
+        VanillaTilt.init(document.querySelectorAll(".js-tilt"), {
+            max: 10,
+            speed: 400,
+            glare: true,
+            "max-glare": 0.3,
+            scale: 1.02
+        });
+
+        // --- Parallax Background ---
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const layers = document.querySelectorAll('.parallax-layer');
+            
+            layers.forEach((layer, index) => {
+                // Different speeds for depth effect
+                // Index 0: Slowest (Background)
+                // Index 2: Fastest (Foreground)
+                const speed = (index + 1) * 0.15; 
+                const yPos = -(scrolled * speed);
+                layer.style.transform = `translateY(${yPos}px)`;
+            });
+        });
 
         // Lightbox Functions
         const lightbox = document.getElementById('lightbox');
@@ -614,6 +833,239 @@
                 navbar.classList.replace('bg-white/90', 'bg-white/70');
             }
         });
+
+        // --- Three.js 3D Background Logic ---
+        const initThreeJS = () => {
+            const canvas = document.getElementById('canvas3d');
+            const scene = new THREE.Scene();
+            
+            // Camera setup
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 6;
+
+            // Renderer setup
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            // Lighting (Needed for solid objects)
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(5, 10, 7);
+            scene.add(dirLight);
+
+            // Objects Group
+            const group = new THREE.Group();
+            scene.add(group);
+
+            const colors = [0xf97316, 0xa855f7, 0x06b6d4, 0xec4899]; // Orange, Purple, Cyan, Pink
+
+            // --- Helper Functions to Create Specific Objects ---
+
+            // 1. Create Pawn (Pion) - Combination of Cylinder, Cone, Sphere
+            function createPawn(color) {
+                const pawnGroup = new THREE.Group();
+                const material = new THREE.MeshPhongMaterial({ color: color, flatShading: true, shininess: 30 });
+                
+                // Base
+                const base = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.4, 0.1, 16), material);
+                base.position.y = -0.4;
+                
+                // Body
+                const body = new THREE.Mesh(new THREE.ConeGeometry(0.25, 0.7, 16), material);
+                body.position.y = 0;
+                
+                // Head
+                const head = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 16), material);
+                head.position.y = 0.45;
+                
+                pawnGroup.add(base, body, head);
+                return pawnGroup;
+            }
+
+            // 2. Create Card (Kartu)
+            function createCard(color) {
+                const geometry = new THREE.BoxGeometry(0.8, 1.1, 0.02);
+                const material = new THREE.MeshPhongMaterial({ color: color, shininess: 10 });
+                return new THREE.Mesh(geometry, material);
+            }
+
+            // 3. Create Dice (Dadu D6)
+            function createDice(color) {
+                const geometry = new THREE.BoxGeometry(0.6, 0.6, 0.6);
+                const material = new THREE.MeshPhongMaterial({ color: color, flatShading: true });
+                return new THREE.Mesh(geometry, material);
+            }
+
+            // 4. Create D20 (Dadu 20 Sisi)
+            function createD20(color) {
+                const geometry = new THREE.IcosahedronGeometry(0.5, 0);
+                const material = new THREE.MeshPhongMaterial({ color: color, flatShading: true });
+                return new THREE.Mesh(geometry, material);
+            }
+
+            // --- Generate Floating Objects ---
+            const objectTypes = [createPawn, createCard, createDice, createD20];
+            const objects = [];
+
+            for (let i = 0; i < 20; i++) {
+                const typeFunc = objectTypes[Math.floor(Math.random() * objectTypes.length)];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                const mesh = typeFunc(color);
+                
+                // Random position spread
+                mesh.position.x = (Math.random() - 0.5) * 18;
+                mesh.position.y = (Math.random() - 0.5) * 18;
+                mesh.position.z = (Math.random() - 0.5) * 12;
+                
+                // Random rotation
+                mesh.rotation.x = Math.random() * Math.PI;
+                mesh.rotation.y = Math.random() * Math.PI;
+
+                // Animation data
+                mesh.userData = {
+                    rotX: (Math.random() - 0.5) * 0.01,
+                    rotY: (Math.random() - 0.5) * 0.01,
+                    floatSpeed: (Math.random() * 0.002) + 0.001,
+                    floatOffset: Math.random() * Math.PI * 2
+                };
+
+                group.add(mesh);
+                objects.push(mesh);
+            }
+
+            // Mouse interaction
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetX = 0;
+            let targetY = 0;
+
+            const windowHalfX = window.innerWidth / 2;
+            const windowHalfY = window.innerHeight / 2;
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX - windowHalfX);
+                mouseY = (event.clientY - windowHalfY);
+            });
+
+            // Animation Loop
+            const animate = () => {
+                requestAnimationFrame(animate);
+
+                targetX = mouseX * 0.0005;
+                targetY = mouseY * 0.0005;
+
+                // Smooth rotation of the whole group based on mouse
+                group.rotation.y += 0.05 * (targetX - group.rotation.y);
+                group.rotation.x += 0.05 * (targetY - group.rotation.x);
+
+                // Animate individual objects
+                const time = Date.now() * 0.001;
+                objects.forEach(obj => {
+                    obj.rotation.x += obj.userData.rotX;
+                    obj.rotation.y += obj.userData.rotY;
+                    
+                    // Floating effect
+                    obj.position.y += Math.sin(time + obj.userData.floatOffset) * 0.005;
+                });
+
+                renderer.render(scene, camera);
+            };
+
+            animate();
+
+            // Handle Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        };
+
+        // Start Three.js when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            initThreeJS(); // Background 3D
+            initCSS3DCard(); // Product 3D Card (CSS Version)
+        });
+
+        // --- CSS 3D Card Logic ---
+        let currentImage = 'boardgame1.jpeg'; // Global variable for lightbox
+
+        const initCSS3DCard = () => {
+            const card = document.getElementById('card');
+            const container = document.getElementById('product-viewer-container');
+            const imgFront = document.getElementById('card-img-front');
+            const imgBack = document.getElementById('card-img-back');
+            
+            const images = ['boardgame1.jpeg', 'boardgame2.jpeg', 'boardgame3.jpeg', 'boardgame4.jpeg', 'boardgame.jpeg'];
+            let currentIndex = 0;
+
+            // Mouse Interaction Variables
+            let isDragging = false;
+            let startX, startY;
+            let currentRotX = 0;
+            let currentRotY = 0;
+            let targetRotX = 0;
+            let targetRotY = 0;
+
+            // Drag Logic
+            container.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                card.classList.remove('auto-rotate'); // Stop auto rotation
+                container.style.cursor = 'grabbing';
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const deltaX = e.clientX - startX;
+                const deltaY = e.clientY - startY;
+                
+                targetRotY = currentRotY + deltaX * 0.5;
+                targetRotX = currentRotX - deltaY * 0.5;
+                
+                // Limit X rotation to prevent flipping upside down too easily (optional)
+                // targetRotX = Math.max(-60, Math.min(60, targetRotX));
+
+                card.style.transform = `translateZ(-50px) rotateX(${targetRotX}deg) rotateY(${targetRotY}deg)`;
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    currentRotX = targetRotX;
+                    currentRotY = targetRotY;
+                    container.style.cursor = 'grab';
+                }
+            });
+
+            // Navigation Logic
+            const updateImages = () => {
+                const imgPath = images[currentIndex];
+                currentImage = imgPath;
+                
+                // Update Front
+                imgFront.src = imgPath;
+                
+                // Update Back (Next Image)
+                const nextIndex = (currentIndex + 1) % images.length;
+                imgBack.src = images[nextIndex];
+            };
+
+            document.getElementById('nextBtn').addEventListener('click', () => {
+                currentIndex = (currentIndex + 1) % images.length;
+                updateImages();
+            });
+
+            document.getElementById('prevBtn').addEventListener('click', () => {
+                currentIndex = (currentIndex - 1 + images.length) % images.length;
+                updateImages();
+            });
+        };
     </script>
 </body>
 </html>
