@@ -231,10 +231,34 @@
             <div class="reveal stagger-1 bg-white rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-2xl shadow-purple-900/5 hover:shadow-purple-900/10 transition-all duration-500">
                 <div class="grid grid-cols-1 lg:grid-cols-2">
                     <!-- Image Side -->
-                    <div class="h-[400px] lg:h-auto bg-purple-50 relative overflow-hidden group">
-                        <div class="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/0 transition-colors z-10"></div>
-                        <img src="https://placehold.co/800x600/e2e8f0/cbd5e1?text=Lumera+Game" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" alt="Lumera Game">
-                        <div class="absolute bottom-6 left-6 z-20 flex gap-2">
+                    <div class="h-auto bg-purple-50 relative overflow-hidden group p-4 flex flex-col justify-center">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-md cursor-pointer group/img" onclick="openLightbox('boardgame.jpeg')">
+                                 <img src="boardgame.jpeg" class="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500" alt="Lumera Game 1">
+                                 <div class="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors flex items-center justify-center">
+                                    <i data-lucide="maximize-2" class="w-8 h-8 text-white opacity-0 group-hover/img:opacity-100 transition-opacity"></i>
+                                 </div>
+                            </div>
+                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-md cursor-pointer group/img" onclick="openLightbox('boardgame2.jpeg')">
+                                 <img src="boardgame2.jpeg" class="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500" alt="Lumera Game 2">
+                                 <div class="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors flex items-center justify-center">
+                                    <i data-lucide="maximize-2" class="w-8 h-8 text-white opacity-0 group-hover/img:opacity-100 transition-opacity"></i>
+                                 </div>
+                            </div>
+                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-md cursor-pointer group/img" onclick="openLightbox('boardgame3.jpeg')">
+                                 <img src="boardgame3.jpeg" class="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500" alt="Lumera Game 3">
+                                 <div class="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors flex items-center justify-center">
+                                    <i data-lucide="maximize-2" class="w-8 h-8 text-white opacity-0 group-hover/img:opacity-100 transition-opacity"></i>
+                                 </div>
+                            </div>
+                            <div class="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-md cursor-pointer group/img" onclick="openLightbox('boardgame4.jpeg')">
+                                 <img src="boardgame4.jpeg" class="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500" alt="Lumera Game 4">
+                                 <div class="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors flex items-center justify-center">
+                                    <i data-lucide="maximize-2" class="w-8 h-8 text-white opacity-0 group-hover/img:opacity-100 transition-opacity"></i>
+                                 </div>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-6 left-6 z-20 flex gap-2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
                             <span class="bg-white/90 backdrop-blur px-4 py-2 rounded-full text-xs font-bold text-purple-700 shadow-lg border border-purple-100 uppercase tracking-wide">Strategy</span>
                             <span class="bg-white/90 backdrop-blur px-4 py-2 rounded-full text-xs font-bold text-slate-700 shadow-lg border border-slate-100 uppercase tracking-wide">Environment</span>
                         </div>
@@ -255,36 +279,91 @@
 
                         <h3 class="text-3xl md:text-4xl font-bold text-slate-900 mb-6 tracking-tight">Susun Strategi, <br>Pecahkan Kasus</h3>
                         
-                        <p class="text-lg text-slate-600 mb-8 leading-relaxed">
-                            Permainan dilakukan oleh 2 tim yang masing masing berisi 6 orang, berlangsung dalam 3 zona kasus dengan tantangan yang semakin kompleks. Awal permainan menuju zona pertama yang berisi kasus, fasilitator akan membacakan kasus pada zona pertama, tiap tim akan akan diberi waktu 10 menit untuk membaca jurnal atau banyak informasi sebelum round pertama dimulai. Setiap zona memiliki satu kasus dan enam pertanyaan yang harus dijawab oleh tim secara bergiliran. Sebelum menjawab setiap pertanyaan, pada round pertama adanya satu pertanyaan yang mengharuskan tim menentukan role mana yang paling relevan untuk maju dan menjawab pertanyaan, karena hanya satu pemain yang boleh menjawab per pertanyaan. Untuk menjawab 6 pertanyaan, tiap satu pernyataan tim harus menentukan satu role yang mampu menjawab paling relevan. Tim yang menjawab lebih cepat dan lebih relevan akan memperoleh poin lebih besar dan dapat melanjutkan pertanyaan berikutnya lebih dulu, sehingga menciptakan unsur kejar-kejaran strategi antar tim. Setelah enam pertanyaan di satu zona selesai, sistem skor menentukan tim mana yang berhak memasuki zona berikutnya duluan. Zona berakhir ketika seluruh tim menyelesaikan tiga zona. Pemenang bukan hanya tim yang menyelesaikan zona tercepat, tetapi juga tim yang mengumpulkan skor tertinggi dari relevansi jawaban.
-                        </p>
+                        <div class="text-slate-600 mb-10 leading-relaxed space-y-8 text-sm">
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-base mb-2">ALUR PERMAINAN LUMERA BOARD GAME</h4>
+                                <p>Dilakukan oleh 2 tim yang masing masing berisi 6 orang. Setiap tim harus melewati total 4 zona, yang lebih dulu sampai pada zona 4 ialah pemenangnya. Fasilitator atau adanya kartu petunjuk yang akan menjelaskan tugas dari setiap role yang menjadi syarat dalam berjalannya permainan ini. Tiap tim yang berisi 6 orang mendiskusikan dalam menentukan role nya masing-masing.</p>
+                            </div>
+
+                            <div>
+                                <h5 class="font-bold text-purple-700 mb-1">ZONA 1 - Team Case Analysis</h5>
+                                <ol class="list-decimal list-inside space-y-1 pl-2 marker:text-purple-500">
+                                    <li>Pemain mengambil 1 kartu kasus sebagai tantangan utama.</li>
+                                    <li>Masing-masing tim mengumpulkan informasi berdasarkan kasus tersebut dari internet/buku yang diberi waktu 10 menit sesuai role anggota tiap tim.</li>
+                                    <li>Perwakilan masing-masing tim mengambil 1 kartu dari total 6 kartu. Setiap pertanyaan dianalisis untuk menentukan: "Pertanyaan ini paling tepat dijawab oleh role ?"</li>
+                                    <li>Tiap tim pada zona ini akan mendapat 6 pertanyaan, dimana seluruh role akan membacakan informasi yang telah mereka cari hanya saja tim menyusun strategi dan menganalisis pertanyaan dengan kesesuaian tugas tiap role.</li>
+                                    <li>Penilaian berdasarkan: Kecepatan menjawab, Kesesuaian dengan role, Ketepatan isi jawaban.</li>
+                                    <li>Pada tiap pertanyaan, tim dengan poin tertinggi berhak melanjutkan menjawab pertanyaan di zona berikutnya lebih dulu.</li>
+                                </ol>
+                            </div>
+
+                            <div>
+                                <h5 class="font-bold text-purple-700 mb-1">ZONA 2 - Role Duel</h5>
+                                <ol class="list-decimal list-inside space-y-1 pl-2 marker:text-purple-500">
+                                    <li>Pemain mengambil kartu duel yang berisi tantangan antar role.</li>
+                                    <li>Tiap role dari dua tim saling beradu: Siapa yang menjawab paling cepat dan tepat? Siapa yang jawabannya paling tepat sesuai role-nya?</li>
+                                    <li>Role yang memenangkan duel akan menyumbang poin untuk tim.</li>
+                                    <li>Tim yang memenangkan duel role terbanyak adalah pemenang zona ini.</li>
+                                </ol>
+                            </div>
+
+                            <div>
+                                <h5 class="font-bold text-purple-700 mb-1">ZONA 3 - Novel Analyst</h5>
+                                <ol class="list-decimal list-inside space-y-1 pl-2 marker:text-purple-500">
+                                    <li>Pemain mengambil 1 Kartu yang berisi informasi serta 6 potongan dialog suatu novel.</li>
+                                    <li>Tim membaca dialog-dialog tersebut dan menentukan: Dialog mana yang paling sesuai dengan role mereka untuk dianalisis?</li>
+                                    <li>Setiap pemain memberi alasan, contoh: "Sebagai Fact Finder, saya memilih dialog nomor 1 karena saya bisa menemukan data tentang..."</li>
+                                    <li>Penilaian berdasarkan: Kesesuaian dialog dengan role, Ketepatan alasan, Kecepatan menentukan pilihan.</li>
+                                    <li>Tim dengan poin tertinggi masuk ke zona selanjutnya.</li>
+                                </ol>
+                            </div>
+
+                            <div>
+                                <h5 class="font-bold text-purple-700 mb-1">ZONA 4 - Reflection Zone (No Role)</h5>
+                                <ol class="list-decimal list-inside space-y-1 pl-2 marker:text-purple-500">
+                                    <li>Pemain mengambil kartu pertanyaan terkait refleksi pengalaman mereka di zona 1–3 atau hal lain yang berkaitan dengan pengalaman di luar permainan.</li>
+                                    <li>Semua anggota bebas menjawab tanpa terikat role.</li>
+                                    <li>Tim yang paling banyak anggotanya berhasil menjawab 1 pertanyaan refleksi dengan baik adalah pemenang zona terakhir.</li>
+                                </ol>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                <h5 class="font-bold text-slate-900 mb-2">Rangkuman Tiap Zona</h5>
+                                <ul class="list-disc list-inside space-y-1 text-xs text-slate-500 marker:text-purple-500">
+                                    <li><strong>Zona 1:</strong> Analisis kasus + pilih role yang tepat untuk tiap pertanyaan.</li>
+                                    <li><strong>Zona 2:</strong> Duel antar role, adu cepat & tepat.</li>
+                                    <li><strong>Zona 3:</strong> Analisis dialog novel sesuai role.</li>
+                                    <li><strong>Zona 4:</strong> Refleksi akhir, tanpa role.</li>
+                                </ul>
+                            </div>
+                        </div>
 
                         <div class="mb-10">
                             <h4 class="font-bold text-slate-900 mb-4">Peran Pemain (Roles)</h4>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                    <div class="font-bold text-purple-700 text-sm mb-1">Fact Finder</div>
-                                    <p class="text-xs text-slate-600">Menjamin jawaban berbasis data dan fakta valid.</p>
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
+                                    <div class="font-bold text-purple-700 text-sm mb-1">Fact Finder (Penelusur Fakta)</div>
+                                    <p class="text-xs text-slate-600">Menjamin jawaban berbasis data, bukti, atau informasi yang dapat diverifikasi.</p>
                                 </div>
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                    <div class="font-bold text-purple-700 text-sm mb-1">Analyst</div>
-                                    <p class="text-xs text-slate-600">Menyusun nalar, pola sebab-akibat, dan kerangka argumen.</p>
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
+                                    <div class="font-bold text-purple-700 text-sm mb-1">Analyst (Analis Logika)</div>
+                                    <p class="text-xs text-slate-600">Menyusun nalar, hubungan sebab-akibat, dan kerangka argumentasi.</p>
                                 </div>
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                    <div class="font-bold text-purple-700 text-sm mb-1">Communicator</div>
-                                    <p class="text-xs text-slate-600">Menyampaikan jawaban akhir secara jelas dan meyakinkan.</p>
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
+                                    <div class="font-bold text-purple-700 text-sm mb-1">Communicator (Penyampai & Penyusun Pesan)</div>
+                                    <p class="text-xs text-slate-600">Mengemas jawaban yang berkaitan dengan penyampaian pesan atau komunikasi efektif.</p>
                                 </div>
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                    <div class="font-bold text-purple-700 text-sm mb-1">Empathizer</div>
-                                    <p class="text-xs text-slate-600">Memastikan jawaban mempertimbangkan nilai moral dan dampak sosial.</p>
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
+                                    <div class="font-bold text-purple-700 text-sm mb-1">Empathizer (Penjaga Nilai & Dampak Sosial)</div>
+                                    <p class="text-xs text-slate-600">Memastikan jawaban mempertimbangkan nilai moral, empati, dan dampak sosial.</p>
                                 </div>
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                    <div class="font-bold text-purple-700 text-sm mb-1">Strategist</div>
-                                    <p class="text-xs text-slate-600">Menjawab pertanyaan yang berkaitan terkait strategi penyelesaian masalah.</p>
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
+                                    <div class="font-bold text-purple-700 text-sm mb-1">Strategist (Perencana Taktis)</div>
+                                    <p class="text-xs text-slate-600">Memberikan strategi penyelesaian masalah yang efektif dan terukur.</p>
                                 </div>
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                    <div class="font-bold text-purple-700 text-sm mb-1">Creator</div>
-                                    <p class="text-xs text-slate-600">Menghasilkan alternatif solusi yang inovatif dan tidak monoton.</p>
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 hover:border-purple-200 transition-colors">
+                                    <div class="font-bold text-purple-700 text-sm mb-1">Creative Thinker (Inovator & Pencetus Ide)</div>
+                                    <p class="text-xs text-slate-600">Menghasilkan alternatif solusi kreatif, inovatif, dan pendekatan baru.</p>
                                 </div>
                             </div>
                         </div>
@@ -436,9 +515,51 @@
         </div>
     </footer>
 
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="fixed inset-0 z-[100] bg-black/90 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4" onclick="closeLightbox()">
+        <button class="absolute top-6 right-6 text-white hover:text-orange-500 transition-colors z-[110]" onclick="closeLightbox()">
+            <i data-lucide="x" class="w-10 h-10"></i>
+        </button>
+        <img id="lightbox-img" src="" alt="Full Preview" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
+    </div>
+
     <script>
         // Initialize Icons
         lucide.createIcons();
+
+        // Lightbox Functions
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+
+        function openLightbox(src) {
+            lightboxImg.src = src;
+            lightbox.classList.remove('hidden');
+            // Small delay to allow display:block to apply before opacity transition
+            setTimeout(() => {
+                lightbox.classList.remove('opacity-0');
+                lightboxImg.classList.remove('scale-95');
+                lightboxImg.classList.add('scale-100');
+            }, 10);
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        function closeLightbox() {
+            lightbox.classList.add('opacity-0');
+            lightboxImg.classList.remove('scale-100');
+            lightboxImg.classList.add('scale-95');
+            setTimeout(() => {
+                lightbox.classList.add('hidden');
+                lightboxImg.src = '';
+            }, 300);
+            document.body.style.overflow = ''; // Restore scrolling
+        }
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                closeLightbox();
+            }
+        });
 
         // Reveal Animation Observer
         const observerOptions = {
