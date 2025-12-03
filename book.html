@@ -215,12 +215,32 @@
         .blur-content .page-number {
             opacity: 0.3;
         }
+
+        /* --- Ripple Effect --- */
+        .ripple-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            background-color: rgba(255, 255, 255, 0.7);
+            pointer-events: none;
+        }
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
 
     <!-- Navigation Back -->
-    <a href="index.html" class="fixed top-4 left-4 z-50 bg-white/90 backdrop-blur p-2.5 rounded-full shadow-lg active:scale-95 transition-transform text-slate-700 border border-slate-200">
+    <a href="index.html" class="ripple-btn fixed top-4 left-4 z-50 bg-white/90 backdrop-blur p-2.5 rounded-full shadow-lg active:scale-95 transition-transform text-slate-700 border border-slate-200">
         <i data-lucide="arrow-left" class="w-5 h-5"></i>
     </a>
 
@@ -235,7 +255,7 @@
             </div>
             <h3 class="text-xl font-bold mb-2">Cara Membaca</h3>
             <p class="text-sm opacity-90 mb-6">Klik pojok halaman atau geser<br>untuk membalik buku.</p>
-            <button id="closeTutorial" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-full text-sm font-bold transition-colors shadow-lg">
+            <button id="closeTutorial" class="ripple-btn bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-full text-sm font-bold transition-colors shadow-lg">
                 Mengerti
             </button>
         </div>
@@ -595,7 +615,7 @@
                     <h3 class="text-lg md:text-xl font-bold text-slate-300 mb-2">Lumera Community</h3>
                     <p class="text-slate-500 text-xs md:text-sm mb-6 md:mb-8">Boardgame & Literacy</p>
                     <div class="text-[10px] md:text-xs text-slate-600">
-                        www.lumera.id
+                        © 2024 Lumera Community Library. All rights reserved.
                     </div>
                 </div>
             </div>
@@ -605,13 +625,13 @@
 
     <!-- Controls -->
     <div class="controls">
-        <button id="prevBtn" class="p-2 rounded-full hover:bg-slate-100 text-slate-700 transition-colors active:bg-slate-200">
+        <button id="prevBtn" class="ripple-btn p-2 rounded-full hover:bg-slate-100 text-slate-700 transition-colors active:bg-slate-200">
             <i data-lucide="chevron-left" class="w-5 h-5 md:w-6 md:h-6"></i>
         </button>
         <span class="text-xs md:text-sm font-medium text-slate-600 flex items-center select-none">
             Geser / Klik
         </span>
-        <button id="nextBtn" class="p-2 rounded-full hover:bg-slate-100 text-slate-700 transition-colors active:bg-slate-200">
+        <button id="nextBtn" class="ripple-btn p-2 rounded-full hover:bg-slate-100 text-slate-700 transition-colors active:bg-slate-200">
             <i data-lucide="chevron-right" class="w-5 h-5 md:w-6 md:h-6"></i>
         </button>
     </div>
@@ -736,6 +756,32 @@
             window.addEventListener('resize', () => {
                 // You could force update here if needed, but 'stretch' mode usually handles it
             });
+
+            // --- Ripple Effect Logic ---
+            function createRipple(event) {
+                const button = event.currentTarget;
+                const circle = document.createElement("span");
+                const diameter = Math.max(button.clientWidth, button.clientHeight);
+                const radius = diameter / 2;
+
+                circle.style.width = circle.style.height = `${diameter}px`;
+                circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+                circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+                circle.classList.add("ripple");
+
+                const ripple = button.getElementsByClassName("ripple")[0];
+
+                if (ripple) {
+                    ripple.remove();
+                }
+
+                button.appendChild(circle);
+            }
+
+            const buttons = document.querySelectorAll(".ripple-btn");
+            for (const button of buttons) {
+                button.addEventListener("click", createRipple);
+            }
         });
     </script>
 </body>
